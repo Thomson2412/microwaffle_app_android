@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Microwaffle 400</string>
+
+    <string name="connecting_dialog_title">"Connecting to %1$s"</string>
+    <string name="connecting_dialog_content">"We are trying to connect to the %1$s. Please remain seated"</string>
+    <string name="connecting_dialog_dismiss">"No, thanks"</string>
+
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+
+    <string name="timer">%1$02d:%2$02d</string>
+    <string name="notification_finish">Consumption time!!</string>
+</resources>
