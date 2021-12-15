@@ -1,9 +1,13 @@
 package com.soloheisbeer.microwaffle400.network
 
+import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 import org.json.JSONObject
+import java.net.InetAddress
 import java.net.URISyntaxException
 
 interface StatusUpdateInterface {
@@ -16,9 +20,8 @@ interface ConnectionUpdateInterface {
 }
 
 object NetworkManager {
-
-    private const val microURL = "http://192.168.178.146"
-//    private const val microURL = "http://192.168.178.10:3030"
+    private const val microURLFallback = "http://192.168.178.146" //fallback
+//    private const val microURL = "http://192.168.178.249:3030" //debug
     private lateinit var socket: Socket
     private var statusUpdateCallbacks = ArrayList<StatusUpdateInterface>()
     private var connectionUpdateCallbacks = ArrayList<ConnectionUpdateInterface>()
@@ -26,8 +29,25 @@ object NetworkManager {
     var isConnected = false
 
     init {
+        runBlocking {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val hostAddress = InetAddress.getByName("http://microwaffle.local").hostAddress
+                    if (hostAddress.isNullOrEmpty())
+                        createSocket(microURLFallback)
+                    else
+                        createSocket(hostAddress)
+                }
+                catch (cause: Throwable){
+                    createSocket(microURLFallback)
+                }
+            }
+        }
+    }
+
+    private fun createSocket(hostAddress: String){
         try {
-            socket = IO.socket(microURL)
+            socket = IO.socket(hostAddress)
             socket.on("connect", OnConnected)
             socket.on("disconnect", OnDisconnected)
             socket.on("statusUpdate", OnStatusUpdate)

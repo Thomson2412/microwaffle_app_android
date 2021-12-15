@@ -182,10 +182,13 @@ class MicroService : Service(),
         }
 
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, notificationIntent, 0
-        )
+        val pendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+            addNextIntent(notificationIntent)
+            getPendingIntent(
+                0,
+                PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
         return NotificationCompat.Builder(this, channelTimerID)
             .setContentTitle(getString(R.string.app_name))
